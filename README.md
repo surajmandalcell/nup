@@ -10,8 +10,23 @@ This tool runs in background and logs if any network distruptions happened, this
 nup [-h] [-l] [-f FILE] [-t TIME]
 ```
 
-#### Compile
+#### Compile and Run
 
+##### Build
 ```
-rustc main.rs -o nup
+cargo build --release
 ```
+
+##### Run
+```
+cargo run
+```
+
+
+#### Todo
+- [ ] Make it installable as a global command
+- [ ] Make it run in background 
+- [ ] Log the output to the terminal when requested
+- [ ] Dont run more than one instance at a time unless specified
+- [ ] Add a flag to log the latency of the request
+- [ ] Add a flag to log the request status code
