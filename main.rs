@@ -1,15 +1,17 @@
-use std::{thread, time};
+use core::time::Duration;
 use rand::seq::SliceRandom;
 use reqwest::blocking::Client;
-use core::time::Duration;
+use std::{thread, time};
 
 struct Config {
     domains: Vec<&'static str>,
     interval_secs: u64,
     timeout_secs: u64,
+    flag_latency: bool,
+    flag_status: bool,
 }
 
-fn ping_domains(config: Config) {
+fn ping(config: Config) {
     let client = Client::builder()
         .timeout(Duration::from_secs(config.timeout_secs))
         .build()
@@ -17,21 +19,49 @@ fn ping_domains(config: Config) {
 
     loop {
         let domain = config.domains.choose(&mut rand::thread_rng()).unwrap();
+        let start_time = time::Instant::now();
 
         match client.get(*domain).send() {
-            Ok(res) => println!("Pinged {}: {:?}", domain, res.status()),
-            Err(e) => println!("Failed to ping {}: {}", domain, e),
+            Ok(res) => {
+                let mut log: String = format!("{}", domain);
+                if config.flag_status {
+                    log = format!("{} | Status: {}", log, res.status());
+                }
+                if config.flag_latency {
+                    let elapsed = start_time.elapsed();
+                    log = format!(
+                        "{} | Time: {}.{:03}s",
+                        log,
+                        elapsed.as_secs(),
+                        elapsed.subsec_millis().to_string()
+                    );
+                }
+                println!("{}", log);
+            }
+            Err(_err) => println!("Failed to ping {}: {}", domain, _err),
         }
 
         thread::sleep(time::Duration::from_secs(config.interval_secs));
     }
 }
 
-
 fn main() {
-   ping_domains(Config {
+    let mut arg_latency = false;
+    let mut arg_status = false;
+
+    for arg in std::env::args().skip(1) {
+        match arg.as_str() {
+            "-t" => arg_latency = true,
+            "-s" => arg_status = true,
+            _ => (),
+        }
+    }
+
+    ping(Config {
         domains: vec!["https://www.google.com", "https://www.bing.com"],
         interval_secs: 1,
         timeout_secs: 5,
+        flag_latency: arg_latency,
+        flag_status: arg_status,
     })
 }

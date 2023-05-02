@@ -28,5 +28,10 @@ cargo run
 - [ ] Make it run in background 
 - [ ] Log the output to the terminal when requested
 - [ ] Dont run more than one instance at a time unless specified
+- [ ] Make sure the writing to file works and is safe
+- [x] Add a flag to log the latency of the request
+- [x] Add a flag to log the request status code
+
+#### Todo Documentation
 - [ ] Add a flag to log the latency of the request
 - [ ] Add a flag to log the request status code
