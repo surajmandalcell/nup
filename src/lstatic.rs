@@ -7,7 +7,7 @@ pub mod statics {
 
     pub fn help_msg() {
         let help_msg = indoc::indoc! {"
-        \nUsage: ping [OPTION]
+        \nUsage: nup [OPTION]
 
         Options:
             -t          Show latency

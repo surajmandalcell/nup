@@ -6,19 +6,24 @@ This tool runs in background and logs if any network distruptions happened, this
 
 #### Usage
 
-```
-nup [-h] [-l] [-f FILE] [-t TIME]
+```bash
+Usage: nup [OPTION]
+
+        Options:
+            -t          Show latency
+            -s          Show status code
+            -h, --help  Show this help message
 ```
 
 #### Compile and Run
 
 ##### Build
-```
+```bash
 cargo build --release
 ```
 
 ##### Run
-```
+```bash
 cargo run
 ```
 
@@ -34,6 +39,6 @@ cargo run
 - [x] Add a argument to show help
 
 #### Todo Documentation
-- [ ] Add a flag to log the latency of the request
-- [ ] Add a flag to log the request status code
-- [ ] Add a argument to show help
+- [x] Add a flag to log the latency of the request
+- [x] Add a flag to log the request status code
+- [x] Add a argument to show help
