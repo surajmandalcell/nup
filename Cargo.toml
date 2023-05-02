@@ -1,7 +1,10 @@
 [package]
 name = "nup"
+license = "MIT"
 version = "0.1.0"
 edition = "2021"
+authors = ["Suraj Mandal"]
+repository = "https://github.com/surajmandalcell/nup"
 description = "A command line tool to monitor and log network downtime and latency."
 
 [dependencies]
