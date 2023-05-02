@@ -48,6 +48,7 @@ fn ping(config: Config) {
 fn main() {
     let mut arg_latency = false;
     let mut arg_status = false;
+    let domains: Vec<&str> = vec!["https://www.google.com", "https://www.bing.com"];
 
     for arg in std::env::args().skip(1) {
         match arg.as_str() {
@@ -58,10 +59,10 @@ fn main() {
     }
 
     ping(Config {
-        domains: vec!["https://www.google.com", "https://www.bing.com"],
+        domains,
         interval_secs: 1,
         timeout_secs: 5,
-        flag_latency: arg_latency,
         flag_status: arg_status,
+        flag_latency: arg_latency,
     })
 }
