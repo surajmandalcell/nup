@@ -31,7 +31,9 @@ cargo run
 - [ ] Make sure the writing to file works and is safe
 - [x] Add a flag to log the latency of the request
 - [x] Add a flag to log the request status code
+- [x] Add a argument to show help
 
 #### Todo Documentation
 - [ ] Add a flag to log the latency of the request
 - [ ] Add a flag to log the request status code
+- [ ] Add a argument to show help

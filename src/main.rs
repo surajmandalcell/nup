@@ -1,7 +1,8 @@
 use core::time::Duration;
+use indoc::indoc;
 use rand::seq::SliceRandom;
 use reqwest::blocking::Client;
-use std::{thread, time};
+use std::{process::exit, thread, time};
 
 struct Config {
     domains: Vec<&'static str>,
@@ -45,6 +46,19 @@ fn ping(config: Config) {
     }
 }
 
+fn help_msg() {
+    let help_msg = indoc! {"
+        \nUsage: ping [OPTION]
+
+        Options:
+            -t          Show latency
+            -s          Show status code
+            -h, --help  Show this help message
+    "};
+    println!("{}", help_msg);
+    exit(0);
+}
+
 fn main() {
     let mut arg_latency = false;
     let mut arg_status = false;
@@ -54,6 +68,7 @@ fn main() {
         match arg.as_str() {
             "-t" => arg_latency = true,
             "-s" => arg_status = true,
+            "-h" | "--help" => help_msg(),
             _ => (),
         }
     }
