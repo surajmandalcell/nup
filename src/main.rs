@@ -3,7 +3,8 @@ mod statics;
 mod types;
 
 use crate::ping::ping;
-use types::{Args, Config};
+use types::args::Args;
+use types::config::Config;
 
 fn main() {
     let mut args = Args {

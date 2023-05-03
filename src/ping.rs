@@ -4,7 +4,7 @@ use reqwest::blocking::Client;
 
 use std::{thread, time};
 
-use crate::types::Config;
+use crate::types::config::Config;
 
 pub fn ping(config: Config) {
     let client = Client::builder()
