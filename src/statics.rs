@@ -1,5 +1,15 @@
 pub mod constants {
+    use std::env::var;
+
     pub const DOMAINS: [&str; 2] = ["https://www.google.com", "https://www.bing.com"];
+
+    #[allow(dead_code)]
+    pub fn get_config_path() -> String {
+        const CONFIG_PATH_TMP: &str = "/.config/nup/config.json";
+        let home: String = var("HOME").unwrap_or_else(|_| "/tmp".to_string());
+        let config_path: String = format!("{}{}", CONFIG_PATH_TMP, home);
+        return config_path;
+    }
 }
 
 pub mod statics {
