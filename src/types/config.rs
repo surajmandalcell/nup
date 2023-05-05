@@ -4,4 +4,5 @@ pub struct Config {
     pub timeout_secs: u64,
     pub flag_latency: bool,
     pub flag_status: bool,
+    pub flag_verbose: bool,
 }

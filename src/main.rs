@@ -10,14 +10,14 @@ fn main() {
     let mut args = Args {
         latency: false,
         status: false,
-        // To be implemented
-        // verbose: false,
+        verbose: false,
     };
 
     for arg in std::env::args().skip(1) {
         match arg.as_str() {
             "-s" => args.status = true,
             "-t" => args.latency = true,
+            "-v" => args.verbose = true,
             "-h" | "--help" => statics::statics::help_msg(),
             _ => (),
         }
@@ -29,5 +29,6 @@ fn main() {
         timeout_secs: 5,
         flag_status: args.status,
         flag_latency: args.latency,
+        flag_verbose: args.verbose,
     })
 }

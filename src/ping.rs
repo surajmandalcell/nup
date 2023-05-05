@@ -31,9 +31,15 @@ pub fn ping(config: Config) {
                         elapsed.subsec_millis().to_string()
                     );
                 }
-                println!("{}", log);
+                if config.flag_verbose {
+                    println!("{}", log)
+                };
             }
-            Err(_err) => println!("Failed to ping {}: {}", domain, _err),
+            Err(_err) => {
+                if config.flag_verbose {
+                    println!("{} | Status: Failed", domain)
+                }
+            }
         }
 
         thread::sleep(time::Duration::from_secs(config.interval_secs));
