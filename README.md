@@ -19,12 +19,12 @@ Usage: nup [OPTION]
 
 ##### Build
 ```bash
-cargo build --release
+go build
 ```
 
 ##### Run
 ```bash
-cargo run
+go run
 ```
 
 
