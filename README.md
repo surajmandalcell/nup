@@ -6,7 +6,7 @@ This tool runs in background and logs if any network distruptions happened, this
 
 #### Usage
 
-```bash
+```text
 Usage: nup [OPTION]
 
         Options:
@@ -29,16 +29,9 @@ go run
 
 
 #### Todo
-- [ ] Make it installable as a global command
+- [ ] Split the code into multiple files
 - [ ] Make it run in background 
-- [ ] Log the output to the terminal when requested
-- [ ] Dont run more than one instance at a time unless specified
 - [ ] Make sure the writing to file works and is safe
-- [x] Add a flag to log the latency of the request
-- [x] Add a flag to log the request status code
-- [x] Add a argument to show help
-
-#### Todo Documentation
-- [x] Add a flag to log the latency of the request
-- [x] Add a flag to log the request status code
-- [x] Add a argument to show help
+- [ ] Dont run more than one instance at a time unless specified
+- [ ] Log the output to the terminal when requested(when it is already running in background)
+- [ ] Make it installable as a global command
