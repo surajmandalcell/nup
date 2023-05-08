@@ -1,13 +1,22 @@
 package app
 
 import (
+	f "fmt"
 	"os"
 
+	"nup/services"
 	"nup/statics"
 	"nup/types"
 )
 
 func ParseArgs(args []string) types.Args {
+	// Experimental
+	db := services.DbService()
+
+	config, _ := db.Get("SELECT * FROM config")
+	f.Println("Config: ", config)
+	// Experimental End
+
 	parsedArgs := types.Args{
 		Latency: false,
 		Status:  false,
