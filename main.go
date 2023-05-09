@@ -5,12 +5,14 @@ import (
 	"nup/types"
 
 	"os"
+	"sync"
 )
 
 func main() {
+	wg := new(sync.WaitGroup)
 	args := app.ParseArgs(os.Args[1:])
 
-	app.Ping(types.Config{
+	app.GPingService = app.Init(wg, types.Config{
 		Domains:      args.Domains,
 		IntervalSecs: 1,
 		TimeoutSecs:  5,
@@ -18,4 +20,11 @@ func main() {
 		FlagLatency:  args.Latency,
 		FlagVerbose:  args.Verbose,
 	})
+
+	wg.Add(1)
+
+	go app.GPingService.Ping()
+
+	app.MainPrompt()
+	wg.Wait()
 }

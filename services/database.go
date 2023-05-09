@@ -6,6 +6,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+// This is class not a type, so it's not in its own types.go
 type DatabaseService struct {
 	db *sql.DB
 }

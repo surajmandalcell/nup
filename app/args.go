@@ -14,7 +14,16 @@ func ParseArgs(args []string) types.Args {
 	db := services.DbService()
 
 	config, _ := db.Get("SELECT * FROM config")
-	f.Println("Config: ", config)
+	defer config.Close()
+
+	for config.Next() {
+		var (
+			id         int
+			key, value string
+		)
+		config.Scan(&id, &key, &value)
+		f.Printf("Config: id=%d, key=%s, value=%s\n", id, key, value)
+	}
 	// Experimental End
 
 	parsedArgs := types.Args{

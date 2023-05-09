@@ -1,43 +1,59 @@
 package app
 
 import (
-	"fmt"
+	f "fmt"
 	"math/rand"
 	"net/http"
+	"sync"
 	"time"
 
 	"nup/types"
 )
 
-func Ping(config types.Config) {
+type PingService struct {
+	config types.Config
+	Wg     *sync.WaitGroup
+	Exit   chan bool
+}
+
+func Init(wg *sync.WaitGroup, config types.Config) *PingService {
+	return &PingService{config: config, Exit: make(chan bool)}
+}
+
+func (s *PingService) Ping() {
 	client := &http.Client{
-		Timeout: time.Duration(config.TimeoutSecs) * time.Second,
+		Timeout: time.Duration(s.config.TimeoutSecs) * time.Second,
 	}
 
 	for {
-		domain := config.Domains[rand.Intn(len(config.Domains))]
+		domain := s.config.Domains[rand.Intn(len(s.config.Domains))]
 		startTime := time.Now()
 
 		resp, err := client.Get(domain)
 		if err != nil {
-			if config.FlagVerbose {
-				fmt.Printf("%s | Status: Failed\n", domain)
+			if s.config.FlagVerbose {
+				f.Printf("%s | Status: Failed\n", domain)
 			}
 			continue
 		}
 
-		log := fmt.Sprintf("%s", domain)
-		if config.FlagStatus {
-			log = fmt.Sprintf("%s | Status: %s", log, resp.Status)
+		log := f.Sprintf("%s", domain)
+		if s.config.FlagStatus {
+			log = f.Sprintf("%s | Status: %s", log, resp.Status)
 		}
-		if config.FlagLatency {
+		if s.config.FlagLatency {
 			elapsed := time.Since(startTime)
-			log = fmt.Sprintf("%s | Time: %ds.%03ds", log, int64(elapsed.Seconds()), elapsed.Milliseconds())
+			log = f.Sprintf("%s | Time: %ds.%03ds", log, int64(elapsed.Seconds()), elapsed.Milliseconds())
 		}
-		if config.FlagVerbose {
-			fmt.Println(log)
+		if s.config.FlagVerbose {
+			f.Println(log)
 		}
 
-		time.Sleep(time.Duration(config.IntervalSecs) * time.Second)
+		time.Sleep(time.Duration(s.config.IntervalSecs) * time.Second)
+
+		if <-s.Exit {
+			f.Println("Exiting...(ctx: ping.go)")
+			break
+		}
 	}
 }
