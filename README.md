@@ -29,9 +29,13 @@ go run
 
 
 #### Todo
-- [ ] Split the code into multiple files
-- [ ] Make it run in background 
+> ##### Target version 1.0.0
+- [x] Split the code into multiple files
+- [ ] Format log properly to db
 - [ ] Make sure the writing to file works and is safe
+- [ ] Make it installable as a global command
+
+> ##### Target version 2.0.0
+- [ ] Make it run in background 
 - [ ] Dont run more than one instance at a time unless specified
 - [ ] Log the output to the terminal when requested(when it is already running in background)
-- [ ] Make it installable as a global command
