@@ -2,6 +2,7 @@ package main
 
 import (
 	"nup/app"
+	"nup/services"
 	"nup/types"
 
 	"os"
@@ -11,6 +12,8 @@ import (
 func main() {
 	wg := new(sync.WaitGroup)
 	args := app.ParseArgs(os.Args[1:])
+	db := services.DbService()
+	db.SetConfig(args)
 
 	app.GPingService = app.Init(wg, types.Config{
 		Domains:      args.Domains,

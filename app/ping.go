@@ -17,7 +17,10 @@ type PingService struct {
 }
 
 func Init(wg *sync.WaitGroup, config types.Config) *PingService {
-	return &PingService{config: config, Exit: make(chan bool)}
+	return &PingService{
+		config: config,
+		Exit:   make(chan bool),
+	}
 }
 
 func (s *PingService) Ping() {
@@ -36,15 +39,17 @@ func (s *PingService) Ping() {
 			}
 			continue
 		}
+		defer resp.Body.Close()
 
 		log := f.Sprintf("%s", domain)
-		if s.config.FlagStatus {
+		switch {
+		case s.config.FlagStatus:
 			log = f.Sprintf("%s | Status: %s", log, resp.Status)
-		}
-		if s.config.FlagLatency {
+		case s.config.FlagLatency:
 			elapsed := time.Since(startTime)
 			log = f.Sprintf("%s | Time: %ds.%03ds", log, int64(elapsed.Seconds()), elapsed.Milliseconds())
 		}
+
 		if s.config.FlagVerbose {
 			f.Println(log)
 		}

@@ -1,46 +1,31 @@
 package app
 
 import (
-	f "fmt"
 	"os"
 
-	"nup/services"
 	"nup/statics"
 	"nup/types"
 )
 
 func ParseArgs(args []string) types.Args {
-	// Experimental
-	db := services.DbService()
-
-	config, _ := db.Get("SELECT * FROM config")
-	defer config.Close()
-
-	for config.Next() {
-		var (
-			id         int
-			key, value string
-		)
-		config.Scan(&id, &key, &value)
-		f.Printf("Config: id=%d, key=%s, value=%s\n", id, key, value)
-	}
-	// Experimental End
-
 	parsedArgs := types.Args{
 		Latency: false,
 		Status:  false,
 		Verbose: false,
+		LogAll:  false,
 		Domains: []string{"https://www.google.com"},
 	}
 
 	for i := 0; i < len(args); i++ {
 		switch args[i] {
 		case "-s":
-			parsedArgs.Status = true
+			parsedArgs.Status = true // default is false, prints status code, should be used with -v
 		case "-t":
-			parsedArgs.Latency = true
+			parsedArgs.Latency = true // default is false, prints latency, should be used with -v
 		case "-v":
-			parsedArgs.Verbose = true
+			parsedArgs.Verbose = true // default is false prints realtime output
+		case "-a", "--all":
+			parsedArgs.LogAll = true // deafult is false, only log failed requests
 		case "-h", "--help":
 			statics.HelpMsg()
 			os.Exit(0)
