@@ -4,7 +4,6 @@ import (
 	"nup/types"
 
 	"database/sql"
-	f "fmt"
 	"strconv"
 	"strings"
 
@@ -17,12 +16,10 @@ type DatabaseSvc struct {
 
 // Getters and Setters
 func (ds *DatabaseSvc) Get(query string, args ...interface{}) (*sql.Rows, error) {
-	f.Println(query, "Args -> ", args)
 	return ds.db.Query(query, args...)
 }
 
 func (ds *DatabaseSvc) Post(query string, args ...interface{}) (sql.Result, error) {
-	f.Println(query, "Args -> ", args)
 	return ds.db.Exec(query, args...)
 }
 
@@ -75,9 +72,11 @@ func (ds *DatabaseSvc) SetConfig(args types.Args) {
  * Setup A New Database File
  */
 func (ds *DatabaseSvc) prepareTables() {
-	statement, _ := ds.db.Prepare(`CREATE TABLE IF NOT EXISTS config (key STRING PRIMARY KEY, value STRING)`)
-	statement2, _ := ds.db.Prepare(`CREATE TABLE IF NOT EXISTS logs (id INTEGER PRIMARY KEY, latency INTEGER, status TEXT, domain TEXT, time TIMESTAMP)`)
-	statements := []*sql.Stmt{statement, statement2}
+	statement0, _ := ds.db.Prepare(`DROP TABLE IF EXISTS config`)
+	statement1, _ := ds.db.Prepare(`DROP TABLE IF EXISTS logs`)
+	statement2, _ := ds.db.Prepare(`CREATE TABLE IF NOT EXISTS config (key STRING PRIMARY KEY, value STRING)`)
+	statement3, _ := ds.db.Prepare(`CREATE TABLE IF NOT EXISTS logs (id INTEGER PRIMARY KEY, latency INTEGER, status TEXT, domain TEXT, time TIMESTAMP)`)
+	statements := []*sql.Stmt{statement0, statement1, statement2, statement3}
 	for _, statement := range statements {
 		statement.Exec()
 	}

@@ -11,7 +11,7 @@ import (
 
 func main() {
 	args := app.ParseArgs(os.Args[1:]) // Initialize args
-	wg := new(sync.WaitGroup)          // Initialize wait group
+	wg := &sync.WaitGroup{}            // Initialize wait group as a pointer
 	db := services.DbInit()            // Initialize database
 	db.SetConfig(args)
 
@@ -26,9 +26,9 @@ func main() {
 
 	wg.Add(1)
 	go pingInstance.Ping()
-
-	if args.Verbose != true {
-		app.MainPrompt(pingInstance)
+	if !args.Verbose {
+		app.MainPrompt()
+		wg.Done()
 	}
 	wg.Wait()
 }

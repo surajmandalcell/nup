@@ -15,18 +15,24 @@ type PingSvc struct {
 	config types.Config
 	db     *services.DatabaseSvc
 	Wg     *sync.WaitGroup
-	Exit   chan bool
+	exit   chan bool
 }
 
 func Init(wg *sync.WaitGroup, db *services.DatabaseSvc, config types.Config) *PingSvc {
 	return &PingSvc{
 		config: config,
 		db:     db,
-		Exit:   make(chan bool),
+		Wg:     wg,
+		exit:   make(chan bool),
 	}
 }
 
-func (s *PingSvc) Ping() {
+func (s *PingSvc) Stop() {
+	s.exit <- true
+	s.Wg.Done()
+}
+
+func (s *PingSvc) Ping() bool {
 	domain := s.config.Domains[rand.Intn(len(s.config.Domains))]
 	startTime := time.Now()
 	elapsed := time.Since(startTime)
@@ -43,14 +49,14 @@ func (s *PingSvc) Ping() {
 			}
 			continue
 		}
-		defer resp.Body.Close()
+		resp.Body.Close()
 
-		log := f.Sprintf("%s", domain)
+		log := domain
 		switch {
 		case s.config.FlagStatus:
 			log = f.Sprintf("%s | Status: %s", log, resp.Status)
 		case s.config.FlagLatency:
-			log = f.Sprintf("%s | Time: %ds.%03ds", log, int64(elapsed.Seconds()), elapsed.Milliseconds())
+			log = f.Sprintf("%s | Time: %v", log, elapsed.Round(time.Millisecond).String())
 		}
 
 		if s.config.FlagVerbose {
@@ -65,12 +71,12 @@ func (s *PingSvc) Ping() {
 		})
 
 		select {
-		case <-s.Exit:
-			f.Println("Exiting...(ctx: ping.go)")
-			s.Wg.Done()
-			break
+		case <-s.exit:
+			goto END
 		case <-time.After(0):
 			time.Sleep(time.Duration(s.config.IntervalSecs) * time.Second)
 		}
 	}
+END:
+	return true
 }

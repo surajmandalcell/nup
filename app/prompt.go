@@ -50,10 +50,9 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 }
 
 type model struct {
-	list         list.Model
-	choice       string
-	quitting     bool
-	pingInstance *PingSvc
+	list     list.Model
+	choice   string
+	quitting bool
 }
 
 func (m model) Init() tea.Cmd {
@@ -87,10 +86,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	f.Println("m.choice: ", m.choice)
 	if m.choice == "Quit" {
-		m.pingInstance.Wg.Done()
-		m.pingInstance.Exit <- true
 		return quitTextStyle.Render("Bye!")
 	}
 	if m.choice != "" {
@@ -102,7 +98,7 @@ func (m model) View() string {
 	return "\n" + m.list.View()
 }
 
-func MainPrompt(pingInstance *PingSvc) {
+func MainPrompt() int {
 	items := []list.Item{
 		item("Show logs"),
 		item("Show losses"),
@@ -120,10 +116,12 @@ func MainPrompt(pingInstance *PingSvc) {
 	l.Styles.PaginationStyle = paginationStyle
 	l.Styles.HelpStyle = helpStyle
 
-	m := model{list: l, pingInstance: pingInstance}
+	m := model{list: l}
 
 	if _, err := tea.NewProgram(m).Run(); err != nil {
 		f.Println("Error running program:", err)
 		os.Exit(1)
 	}
+
+	return 0
 }
