@@ -1,32 +1,36 @@
 package services
 
 import (
-	"database/sql"
 	"nup/types"
+
+	"database/sql"
+	f "fmt"
 	"strconv"
 	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
-type DatabaseService struct {
+type DatabaseSvc struct {
 	db *sql.DB
 }
 
 // Getters and Setters
-func (ds *DatabaseService) Get(query string, args ...interface{}) (*sql.Rows, error) {
+func (ds *DatabaseSvc) Get(query string, args ...interface{}) (*sql.Rows, error) {
+	f.Println(query, "Args -> ", args)
 	return ds.db.Query(query, args...)
 }
 
-func (ds *DatabaseService) Post(query string, args ...interface{}) (sql.Result, error) {
+func (ds *DatabaseSvc) Post(query string, args ...interface{}) (sql.Result, error) {
+	f.Println(query, "Args -> ", args)
 	return ds.db.Exec(query, args...)
 }
 
-func (ds *DatabaseService) Close() {
+func (ds *DatabaseSvc) Close() {
 	ds.db.Close()
 }
 
-func (ds *DatabaseService) GetConfig() types.Args {
+func (ds *DatabaseSvc) GetConfig() types.Args {
 	rows, err := ds.Get("SELECT key, value FROM config")
 	if err != nil {
 		panic(err)
@@ -57,7 +61,7 @@ func (ds *DatabaseService) GetConfig() types.Args {
 	return args
 }
 
-func (ds *DatabaseService) SetConfig(args types.Args) {
+func (ds *DatabaseSvc) SetConfig(args types.Args) {
 	ds.Post("INSERT INTO config (key, value) VALUES (?, ?)", "status", args.Status)
 	ds.Post("INSERT INTO config (key, value) VALUES (?, ?)", "latency", args.Latency)
 	ds.Post("INSERT INTO config (key, value) VALUES (?, ?)", "verbose", args.Verbose)
@@ -68,27 +72,26 @@ func (ds *DatabaseService) SetConfig(args types.Args) {
 }
 
 /*
- * This does proper due dilligance and gives\
- * a pointer to the DatabaseService
+ * Setup A New Database File
  */
-func (ds *DatabaseService) prepareTables() {
-	statement, _ := ds.db.Prepare(`CREATE TABLE IF NOT EXISTS logs (id INTEGER PRIMARY KEY,	latency INTEGER, status INTEGER, domain TEXT,	time INTEGER)`)
-	statement2, _ := ds.db.Prepare("CREATE TABLE IF NOT EXISTS config (id INTEGER PRIMARY KEY, key STRING, value STRING)")
+func (ds *DatabaseSvc) prepareTables() {
+	statement, _ := ds.db.Prepare(`CREATE TABLE IF NOT EXISTS config (key STRING PRIMARY KEY, value STRING)`)
+	statement2, _ := ds.db.Prepare(`CREATE TABLE IF NOT EXISTS logs (id INTEGER PRIMARY KEY, latency INTEGER, status TEXT, domain TEXT, time TIMESTAMP)`)
 	statements := []*sql.Stmt{statement, statement2}
 	for _, statement := range statements {
 		statement.Exec()
 	}
 }
 
-func DbService() *DatabaseService {
+func DbInit() *DatabaseSvc {
 	db, err := sql.Open("sqlite3", "./nup.db")
 	if err != nil {
 		panic(err)
 	}
 	db.SetMaxOpenConns(1)
 
-	ds := &DatabaseService{db: db}
-	ds.prepareTables() // Prepare Tables
+	ds := &DatabaseSvc{db: db}
+	ds.prepareTables()
 
 	return ds
 }

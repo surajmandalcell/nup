@@ -3,7 +3,7 @@ package app
 import (
 	"os"
 
-	"nup/statics"
+	"nup/static"
 	"nup/types"
 )
 
@@ -27,7 +27,7 @@ func ParseArgs(args []string) types.Args {
 		case "-a", "--all":
 			parsedArgs.LogAll = true // deafult is false, only log failed requests
 		case "-h", "--help":
-			statics.HelpMsg()
+			static.HelpMsg()
 			os.Exit(0)
 		}
 	}

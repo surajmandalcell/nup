@@ -7,31 +7,35 @@ import (
 	"sync"
 	"time"
 
+	"nup/services"
 	"nup/types"
 )
 
-type PingService struct {
+type PingSvc struct {
 	config types.Config
+	db     *services.DatabaseSvc
 	Wg     *sync.WaitGroup
 	Exit   chan bool
 }
 
-func Init(wg *sync.WaitGroup, config types.Config) *PingService {
-	return &PingService{
+func Init(wg *sync.WaitGroup, db *services.DatabaseSvc, config types.Config) *PingSvc {
+	return &PingSvc{
 		config: config,
+		db:     db,
 		Exit:   make(chan bool),
 	}
 }
 
-func (s *PingService) Ping() {
+func (s *PingSvc) Ping() {
+	domain := s.config.Domains[rand.Intn(len(s.config.Domains))]
+	startTime := time.Now()
+	elapsed := time.Since(startTime)
+
 	client := &http.Client{
 		Timeout: time.Duration(s.config.TimeoutSecs) * time.Second,
 	}
 
 	for {
-		domain := s.config.Domains[rand.Intn(len(s.config.Domains))]
-		startTime := time.Now()
-
 		resp, err := client.Get(domain)
 		if err != nil {
 			if s.config.FlagVerbose {
@@ -46,7 +50,6 @@ func (s *PingService) Ping() {
 		case s.config.FlagStatus:
 			log = f.Sprintf("%s | Status: %s", log, resp.Status)
 		case s.config.FlagLatency:
-			elapsed := time.Since(startTime)
 			log = f.Sprintf("%s | Time: %ds.%03ds", log, int64(elapsed.Seconds()), elapsed.Milliseconds())
 		}
 
@@ -54,11 +57,20 @@ func (s *PingService) Ping() {
 			f.Println(log)
 		}
 
-		time.Sleep(time.Duration(s.config.IntervalSecs) * time.Second)
+		services.LogSql(s.db, types.Log{
+			Latency: int64(elapsed.Milliseconds()),
+			Status:  resp.Status,
+			Domain:  domain,
+			Time:    time.Now(),
+		})
 
-		if <-s.Exit {
+		select {
+		case <-s.Exit:
 			f.Println("Exiting...(ctx: ping.go)")
+			s.Wg.Done()
 			break
+		case <-time.After(0):
+			time.Sleep(time.Duration(s.config.IntervalSecs) * time.Second)
 		}
 	}
 }

@@ -1,8 +1,10 @@
 package types
 
+import "time"
+
 type Log struct {
 	Latency int64
-	Status  int
+	Status  string
 	Domain  string
-	Time    int64
+	Time    time.Time
 }

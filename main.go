@@ -10,24 +10,25 @@ import (
 )
 
 func main() {
-	wg := new(sync.WaitGroup)
-	args := app.ParseArgs(os.Args[1:])
-	db := services.DbService()
+	args := app.ParseArgs(os.Args[1:]) // Initialize args
+	wg := new(sync.WaitGroup)          // Initialize wait group
+	db := services.DbInit()            // Initialize database
 	db.SetConfig(args)
 
-	app.GPingService = app.Init(wg, types.Config{
+	pingInstance := app.Init(wg, db, types.Config{ // Initialize ping instance
 		Domains:      args.Domains,
 		IntervalSecs: 1,
-		TimeoutSecs:  5,
+		TimeoutSecs:  1,
 		FlagStatus:   args.Status,
 		FlagLatency:  args.Latency,
 		FlagVerbose:  args.Verbose,
 	})
 
 	wg.Add(1)
+	go pingInstance.Ping()
 
-	go app.GPingService.Ping()
-
-	app.MainPrompt()
+	if args.Verbose != true {
+		app.MainPrompt(pingInstance)
+	}
 	wg.Wait()
 }
