@@ -34,14 +34,13 @@ func (s *PingSvc) Stop() {
 
 func (s *PingSvc) Ping() bool {
 	domain := s.config.Domains[rand.Intn(len(s.config.Domains))]
-	startTime := time.Now()
-	elapsed := time.Since(startTime)
 
 	client := &http.Client{
 		Timeout: time.Duration(s.config.TimeoutSecs) * time.Second,
 	}
 
 	for {
+		startTime := time.Now()
 		resp, err := client.Get(domain)
 		if err != nil {
 			if s.config.FlagVerbose {
@@ -50,6 +49,7 @@ func (s *PingSvc) Ping() bool {
 			continue
 		}
 		resp.Body.Close()
+		elapsed := time.Since(startTime)
 
 		log := domain
 		switch {
@@ -64,7 +64,7 @@ func (s *PingSvc) Ping() bool {
 		}
 
 		services.LogSql(s.db, types.Log{
-			Latency: int64(elapsed.Milliseconds()),
+			Latency: elapsed.Milliseconds(),
 			Status:  resp.Status,
 			Domain:  domain,
 			Time:    time.Now(),

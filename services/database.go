@@ -44,9 +44,6 @@ func (ds *DatabaseSvc) GetConfig() types.Args {
 		case "Status":
 			b, _ := strconv.ParseBool(value)
 			args.Status = b
-		case "Verbose":
-			b, _ := strconv.ParseBool(value)
-			args.Verbose = b
 		case "LogAll":
 			b, _ := strconv.ParseBool(value)
 			args.LogAll = b
@@ -61,7 +58,6 @@ func (ds *DatabaseSvc) GetConfig() types.Args {
 func (ds *DatabaseSvc) SetConfig(args types.Args) {
 	ds.Post("INSERT INTO config (key, value) VALUES (?, ?)", "status", args.Status)
 	ds.Post("INSERT INTO config (key, value) VALUES (?, ?)", "latency", args.Latency)
-	ds.Post("INSERT INTO config (key, value) VALUES (?, ?)", "verbose", args.Verbose)
 	ds.Post("INSERT INTO config (key, value) VALUES (?, ?)", "log_all", args.LogAll)
 	for _, domain := range args.Domains {
 		ds.Post("INSERT INTO config (key, value) VALUES (?, ?)", "domain", domain)

@@ -100,9 +100,8 @@ func (m model) View() string {
 
 func MainPrompt() int {
 	items := []list.Item{
-		item("Show logs"),
-		item("Show losses"),
-		item("Quit with logger running"),
+		item("Save logs"),
+		item("Create Report"),
 		item("Quit"),
 	}
 

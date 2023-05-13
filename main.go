@@ -21,14 +21,11 @@ func main() {
 		TimeoutSecs:  1,
 		FlagStatus:   args.Status,
 		FlagLatency:  args.Latency,
-		FlagVerbose:  args.Verbose,
 	})
 
 	wg.Add(1)
 	go pingInstance.Ping()
-	if !args.Verbose {
-		app.MainPrompt()
-		wg.Done()
-	}
+	app.MainPrompt()
+	wg.Done()
 	wg.Wait()
 }
